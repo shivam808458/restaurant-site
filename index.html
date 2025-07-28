@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Restaurant</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Your menu items, cart details, etc. -->
+
+  <!-- 🟢 Razorpay Pay Button -->
+  <button id="pay-btn">Pay Now</button>
+
+  <!-- 🟢 Razorpay Script and Payment Handler -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script>
+    document.getElementById("pay-btn").onclick = async function () {
+      const amount = 500; // Or use your dynamic total here
+
+      const response = await fetch("/create/order", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ amount }),
+      });
+
+      const order = await response.json();
+
+      const options = {
+        key: "rzp_test_lvIjDBjauyGj9a",
+        amount: order.amount,
+        currency: "INR",
+        name: "My Restaurant",
+        description: "Order Payment",
+        order_id: order.id,
+        handler: function (response) {
+          alert("Payment Successful! ID: " + response.razorpay_payment_id);
+        },
+        theme: {
+          color: "#3399cc",
+        },
+      };
+
+      const rzp = new Razorpay(options);
+      rzp.open();
+    };
+  </script>
+
+</body>
+</html>

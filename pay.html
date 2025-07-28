@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Payment</title>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+<body>
+  <h1>Pay Now</h1>
+  <button onclick="payNow()">Pay ₹500</button>
+
+  <script>
+    function payNow() {
+      fetch("/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: 500 }) // ₹500
+      })
+      .then(res => res.json())
+      .then(order => {
+        const options = {
+          key: "YOUR_KEY_ID_HERE", // Same as in config.js
+          amount: order.amount,
+          currency: "INR",
+          name: "Spice Hub",
+          description: "Food Order Payment",
+          order_id: order.id,
+          handler: function (response) {
+            alert("✅ Payment Successful!");
+            window.location.href = "/index.html";
+          },
+          prefill: {
+            name: "Customer",
+            email: "test@example.com",
+            contact: "9000090000"
+          },
+        };
+        const rzp = new Razorpay(options);
+        rzp.open();
+      });
+    }
+  </script>
+</body>
+</html>
+
